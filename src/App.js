@@ -3,6 +3,7 @@ import { ThemeProvider, createGlobalStyle } from "styled-components";
 import variables from "./variables";
 import LogginSpace from "./components/LogginSpace/LogginSpace";
 import SignUpSpace from "./components/SignUpSpace/SignUpSpace";
+import CocktailsList from "./components/CocktailsList/CocktailsList";
 
 function App() {
   const GlobalStyle = createGlobalStyle`
@@ -21,6 +22,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={LogginSpace}></Route>
           <Route exact path="/inscription" component={SignUpSpace}></Route>
+          <Route exact path="/cocktailsList" component={CocktailsList}></Route>
         </Switch>
       </ThemeProvider>
     </BrowserRouter>
