@@ -39,7 +39,7 @@ function CocktailsOrder() {
         </div>
       </section> */}
       <section className="cocktails--order--list mt-4">
-        <table className="table table-light table-striped">
+        <table className="table">
           <thead>
             <tr>
               <th>Quantité</th>
