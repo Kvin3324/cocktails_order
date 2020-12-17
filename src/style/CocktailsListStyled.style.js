@@ -25,16 +25,37 @@ const CocktailsListStyled = styled(GlobalContainer)`
     }
   }
   .cocktails--list {
-    .form-check {
-      label {
-        font-family: "Nunito";
+   input {
+    font-weight: 200;
+    border: none;
+    background-color: #F9E4DF;
+    color: black;
+    font-family: "Nunito";
+      &:focus {
+        outline: none;
       }
-    }
+   }
   }
 
   @media screen and (min-width: 320px) and (max-width: 568px) {
     .about--text {
       margin: 10px 0;
+    }
+  }
+
+  @media screen and (min-width: 375px) and (max-width: 667px) {
+    .about {
+      .about--title {
+        justify-content: space-between;
+      }
+    }
+    .about--text {
+      p {
+        margin: 0 7px;
+      }
+    }
+    .cocktails--list, .btn--command {
+      margin: 0 7px;
     }
   }
 `;
