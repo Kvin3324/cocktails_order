@@ -41,24 +41,32 @@ function CocktailsList() {
             </p>
           </div>
           <section className="cocktails--list">
-            {data.cocktails.map((cocktail, index) => {
+            <table className="table table-light table-striped">
+              <thead>
+                <tr>
+                  <th>Quantité</th>
+                  <th>Cocktail</th>
+                </tr>
+              </thead>
+              <tbody>
+              {data.cocktails.map((cocktail, index) => {
               return (
-                <div className="form-check" key={index}>
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                  />
-                  <label className="form-check-label" htmlFor="defaultCheck1">
-                    {cocktail}
-                  </label>
-                </div>
+                <tr key={index}>
+                  <th>
+                    <input
+                      type="number"
+                      style={{width: "10vw"}}
+                    />
+                  </th>
+                  <td>{cocktail}</td>
+                </tr>
               );
             })}
+              </tbody>
+            </table>
           </section>
           <div className="btn--command mt-5">
-            <button className="btn btn-primary">Commander</button>
+            <button className="btn btn-secondary">Commander</button>
           </div>
         </>
       )}
