@@ -37,6 +37,14 @@ const CocktailsListStyled = styled(GlobalContainer)`
    }
   }
 
+  button {
+    background-color: #F9E4DF;
+    color: black;
+    border: none;
+    font-family: "Roboto";
+    font-weight: bold;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 568px) {
     .about--text {
       margin: 10px 0;
