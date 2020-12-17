@@ -10,6 +10,14 @@ const CocktailsOrderStyled = styled(GlobalContainer)`
     }
   }
 }
+
+@media screen and (min-width: 375px) and (max-width: 667px) {
+  .cocktails--order--list {
+    table {
+      width: 100%;
+    }
+  }
+}
 `;
 
 export default CocktailsOrderStyled;
