@@ -33,13 +33,13 @@ function CocktailsOrder() {
 
   return (
     <CocktailsOrderStyled as="div">
-      <section className="about">
+      {/* <section className="about">
         <div className="about--text">
           <p>A toi de jouer barman !</p>
         </div>
-      </section>
-      <section className="cocktails--order--list">
-        <table className="table table-dark table-striped">
+      </section> */}
+      <section className="cocktails--order--list mt-4">
+        <table className="table table-light table-striped">
           <thead>
             <tr>
               <th>Quantité</th>
