@@ -5,13 +5,31 @@ import CocktailsOrder from "../../CocktailsOrder/CocktailsOrder";
 
 function CocktailsList() {
   const [data, setData] = React.useState({
-    cocktails: ["Whisky", "Vodka", "Manzana", "Get", "Ricard", "Vin"],
-    switch: false,
+    cocktails: [],
+    switchBtn: false,
   });
 
   const handleChange = (event) => {
     setData({ ...data, [event.target.name]: event.target.checked });
   };
+
+  React.useEffect(() => {
+    fetch('http://localhost:1337/cocktails-lists', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      const newState = {...data};
+
+      newState.cocktails = data[0].list_cocktails;
+      newState.switchBtn = false;
+      return setData(newState);
+    });
+
+  }, [])
 
   return (
     <CocktailsListStyled as="main">
@@ -20,17 +38,17 @@ function CocktailsList() {
           <h1>Hello Mekton96</h1>
           <div className="about--title--switch">
             <Switch
-              checked={data.switch}
+              checked={data.switchBtn}
               onChange={handleChange}
               color="primary"
-              name="switch"
+              name="switchBtn"
               inputProps={{ "aria-label": "primary checkbox" }}
             />
-            <p>{data.switch ? "Barman 🍹" : "A boire ! 🍻"}</p>
+            <p>{data.switchBtn ? "Barman 🍹" : "A boire ! 🍻"}</p>
           </div>
         </div>
       </section>
-      {data.switch ? (
+      {data.switchBtn ? (
         <CocktailsOrder></CocktailsOrder>
       ) : (
         <>
@@ -41,7 +59,7 @@ function CocktailsList() {
             </p>
           </div>
           <section className="cocktails--list">
-            <table className="table table-light table-striped">
+            <table className="table">
               <thead>
                 <tr>
                   <th>Quantité</th>
@@ -58,7 +76,7 @@ function CocktailsList() {
                       style={{width: "10vw"}}
                     />
                   </th>
-                  <td>{cocktail}</td>
+                  <td>{cocktail.name}</td>
                 </tr>
               );
             })}
