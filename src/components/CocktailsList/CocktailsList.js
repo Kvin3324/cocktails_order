@@ -1,12 +1,17 @@
 import React from "react";
+import axios from "axios";
 import Switch from "@material-ui/core/Switch";
 import CocktailsListStyled from "../../style/CocktailsListStyled.style";
-import CocktailsOrder from "../../CocktailsOrder/CocktailsOrder";
+import CocktailsOrder from "../CocktailsOrder/CocktailsOrder";
 
 function CocktailsList() {
   const [data, setData] = React.useState({
     cocktails: [],
     switchBtn: false,
+    command: [{
+      clientName: sessionStorage.username,
+      cocktails: []
+    }]
   });
 
   const handleChange = (event) => {
@@ -14,28 +19,50 @@ function CocktailsList() {
   };
 
   React.useEffect(() => {
-    fetch('http://localhost:1337/cocktails-lists', {
-      method: 'GET',
+    axios.get('http://localhost:1337/cocktails-lists', {
       headers: {
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionStorage.userToken}`
       },
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(response => {
       const newState = {...data};
 
-      newState.cocktails = data[0].list_cocktails;
+      newState.cocktails = response.data[0].list_cocktails;
       newState.switchBtn = false;
       return setData(newState);
-    });
-
+    })
   }, [])
+
+  function createItemsOrder(e, cocktail) {
+    const newState = {...data};
+
+    if (e.target.value > 0) {
+      console.log(cocktail);
+      newState.command[0].cocktails.push({name: cocktail.name, quantity: e.target.value, recipe: cocktail.description});
+    }
+
+    return setData(newState);
+  }
+
+  function createOrder(e) {
+    e.preventDefault();
+
+    axios.post('http://localhost:1337/orders', {
+      clientName: data.command[0].clientName,
+      cocktails: data.command[0].cocktails,
+      headers: {
+        Authorization: `${sessionStorage.userToken}`,
+      },
+    })
+    .then(response => console.log(response))
+    .catch((error) => console.log(error));
+  }
 
   return (
     <CocktailsListStyled as="main">
       <section className="about">
         <div className="about--title">
-          <h1>Hello Mekton96</h1>
+          <h1>Hello {sessionStorage.username}</h1>
           <div className="about--title--switch">
             <Switch
               checked={data.switchBtn}
@@ -74,9 +101,10 @@ function CocktailsList() {
                     <input
                       type="number"
                       style={{width: "10vw"}}
+                      onBlur={(e) => createItemsOrder(e, cocktail)}
                     />
                   </th>
-                  <td>{cocktail.name}</td>
+                  <td id={index}>{cocktail.name}</td>
                 </tr>
               );
             })}
@@ -84,7 +112,7 @@ function CocktailsList() {
             </table>
           </section>
           <div className="btn--command mt-5">
-            <button className="btn btn-secondary">Commander</button>
+            <button className="btn btn-secondary" onClick={createOrder}>Commander</button>
           </div>
         </>
       )}
