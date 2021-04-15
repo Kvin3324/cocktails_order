@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import axios from "axios";
 // import LoaderSvg from "../../img/loader.svg";
 import SignUpSpaceStyled from "../../style/SignUpSpaceStyled.style";
 import InputsForm from "../InputsForm/InputsForm";
+import ModalError from "../Modal/ModalError";
 
 function SignUpSpace() {
   const refInputNickName = React.useRef(null);
@@ -12,8 +14,9 @@ function SignUpSpace() {
     loader: false,
     btnDisabled: true,
     error: {},
-    errorApi: false,
-    errorMessage: ""
+    errorMessage: "",
+    isModalError: false,
+    // errorApi: false,
   });
   // const [redirect, setRedirect] = React.useState(false);
 
@@ -22,16 +25,16 @@ function SignUpSpace() {
       "inputNickName",
       "inputMail",
       "inputPswd",
-      "inputCheckPswd"
+      "inputCheckPswd",
     ];
     const newState = { ...data };
     const obj = {
       error: false,
       message: "",
-      accessToChange: false
+      accessToChange: false,
     };
 
-    arrInputId.forEach(element => (newState.error[element] = { ...obj }));
+    arrInputId.forEach((element) => (newState.error[element] = { ...obj }));
 
     return setData(newState);
   }, []); //eslint-disable-line
@@ -66,7 +69,10 @@ function SignUpSpace() {
 
     if (inputIdTarget === "inputPswd") {
       if (e.target.value.length < 6)
-        return updateState(inputIdTarget, "Le mot de passe doit faire 6 charactères");
+        return updateState(
+          inputIdTarget,
+          "Le mot de passe doit faire 6 charactères"
+        );
 
       if (refInputCheckPswd.current.value !== "") {
         if (refInputPswd.current.value !== refInputCheckPswd.current.value) {
@@ -97,7 +103,7 @@ function SignUpSpace() {
       refInputPswd.current.value !== "" &&
       refInputCheckPswd.current.value !== ""
     ) {
-      const btnEnabled = Object.values(newState.error).every(el => !el.error);
+      const btnEnabled = Object.values(newState.error).every((el) => !el.error);
 
       if (btnEnabled) {
         newState.btnDisabled = false;
@@ -129,6 +135,48 @@ function SignUpSpace() {
   function fetchUserData(e) {
     e.preventDefault();
 
+    console.log(refInputNickName.current.value);
+    console.log(refInputMail.current.value);
+    console.log(refInputPswd.current.value);
+
+    axios
+      .post("http://localhost:1337/auth/local/register", {
+        username: refInputNickName.current.value,
+        email: refInputMail.current.value,
+        password: refInputPswd.current.value
+      })
+      .then(response => {
+        console.log("User profile", response);
+      })
+      .catch((error) => {
+        if (error.response.status === 500) {
+          return setData({
+            ...data,
+            isModalError: true,
+          });
+        }
+      });
+
+    // return fetch("http://localhost:1337/registrations", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     pseudo: refInputNickName.current.value,
+    //     email: refInputMail.current.value,
+    //     password: refInputPswd.current.value,
+    //     confirm_password: refInputCheckPswd.current.value
+    //   })
+    // })
+    // .then(response => {
+    //   // Handle success.
+    //   console.log('Well done!');
+    //   console.log('User profile', response.data.user);
+    //   console.log('User token', response.data.jwt);
+    // })
+    // .catch(error => {
+    //   // Handle error.
+    //   console.log('An error occurred:', error.response);
+    // });
+
     // return FetchFunction("/register", "POST", {
     //   credentials: "include",
     //   body: {
@@ -150,10 +198,26 @@ function SignUpSpace() {
     //   });
   }
 
+  function closeModalOutside() {
+    const newState = { ...data };
+
+    newState.isModalError = false;
+
+    return setData(newState);
+  }
+
   // if (redirect) return <Redirect to="/feed"></Redirect>;
 
   return (
     <React.Fragment>
+      {data.isModalError && (
+        <ModalError
+          modalTitle="Une erreur est survenue frère"
+          closeModal={closeModalOutside}
+          modalMessage="Ton pseudo ou mail existe déjà... Essaie de réinitialiser ton mot de passe ou te créer un compte."
+          modalBtnValue="Fermer"
+        ></ModalError>
+      )}
       <SignUpSpaceStyled
         as="form"
         btnDisabled={data.btnDisabled}
@@ -198,7 +262,11 @@ function SignUpSpace() {
             isError={data.error.inputCheckPswd ? data.error.inputCheckPswd : ""}
           ></InputsForm>
           <div className="form--inscription--btn">
-            <input type="submit" disabled={data.btnDisabled} value="Inscription"></input>
+            <input
+              type="submit"
+              disabled={data.btnDisabled}
+              value="Inscription"
+            ></input>
           </div>
           <div className="form--inscription--link">
             <p>J'ai déjà un compte</p>
