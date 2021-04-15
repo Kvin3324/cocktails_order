@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Link, Redirect } from "react-router-dom";
 import LogginSpaceStyled from "../../style/LogginSpaceStyled.style";
 import InputsForm from "../InputsForm/InputsForm";
+import ModalError from "../Modal/ModalError";
 // import LoaderSvg from "../../img/loader.svg";
 
 function LogginSpace() {
@@ -10,20 +12,21 @@ function LogginSpace() {
   const [data, setData] = React.useState({
     loader: false,
     btnDisabled: true,
-    error: {}
+    error: {},
+    isModalError: false,
   });
-  // const [redirect, setRedirect] = React.useState(false);
+  const [redirect, setRedirect] = React.useState(false);
 
   React.useEffect(() => {
-    const arrInputId = ["inputMail", "inputPswd"];
+    const arrInputId = ["inputMail", "inputPswd", "inputUsername"];
     const newState = { ...data };
     const obj = {
       error: false,
       message: "",
-      accessToChange: false
+      accessToChange: false,
     };
 
-    arrInputId.forEach(element => (newState.error[element] = { ...obj }));
+    arrInputId.forEach((element) => (newState.error[element] = { ...obj }));
 
     return setData(newState);
   }, []); //eslint-disable-line
@@ -58,7 +61,10 @@ function LogginSpace() {
 
     if (inputTargetId === "inputPswd") {
       if (e.target.value.length < 6)
-        return updateState(inputTargetId, "Le mot de passe doit faire 6 charactères");
+        return updateState(
+          inputTargetId,
+          "Le mot de passe doit faire 6 charactères"
+        );
     }
 
     if (!newState.error[inputTargetId].accessToChange) {
@@ -69,7 +75,7 @@ function LogginSpace() {
     newState.error[inputTargetId].message = "";
 
     if (inputMail.current.value !== "" && inputPswd.current.value !== "") {
-      const btnEnabled = Object.values(newState.error).every(el => !el.error);
+      const btnEnabled = Object.values(newState.error).every((el) => !el.error);
 
       if (btnEnabled) {
         newState.btnDisabled = false;
@@ -98,12 +104,61 @@ function LogginSpace() {
     return setData(newState);
   }
 
-  // if (redirect) return <Redirect to="/feed"></Redirect>;
+  function fetchLoggin(e) {
+    e.preventDefault();
+
+    axios
+      .post("http://localhost:1337/auth/local", {
+        identifier: inputMail.current.value,
+        password: inputPswd.current.value,
+      })
+      .then((response) => {
+        console.log("User profile", response);
+        if (response.status === 200) {
+          sessionStorage.setItem("userToken", response.data.jwt);
+          sessionStorage.setItem("userId", response.data.user.id);
+          sessionStorage.setItem("username", response.data.user.username);
+          setRedirect(true);
+        }
+      })
+      .catch((error) => {
+        if (error.response.status >= 400 && error.response.status <= 500) {
+          return setData({
+            ...data,
+            isModalError: true,
+          });
+        }
+      });
+  }
+
+  function closeModal() {
+    const newState = { ...data };
+
+    newState.isModalError = false;
+
+    document.querySelector("body").style.overflow = "auto";
+
+    return setData(newState);
+  }
+
+  if (redirect) return <Redirect to={`/cocktailsList/${sessionStorage.getItem('userToken')}`}></Redirect>;
 
   return (
     <React.Fragment>
       <main>
-        <LogginSpaceStyled as="form" btnDisabled={data.btnDisabled}>
+        {data.isModalError === true && (
+          <ModalError
+            modalTitle="Error"
+            modalMessage="Ton mail ou password est faux maggle !"
+            modalBtnValue="Ok"
+            closeModal={closeModal}
+          ></ModalError>
+        )}
+        <LogginSpaceStyled
+          as="form"
+          btnDisabled={data.btnDisabled}
+          onSubmit={fetchLoggin}
+        >
           <div className="form--connexion">
             <div className="form--connexion--title">
               <h2>Connexion</h2>
