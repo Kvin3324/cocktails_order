@@ -7,6 +7,10 @@ const CocktailsOrderStyled = styled(GlobalContainer)`
     table {
       table-layout: fixed;
       width: 300px;
+      td {
+        border-right: 1px solid #dee2e6;
+        border-left: 1px solid #dee2e6;
+      }
     }
   }
 }
@@ -15,6 +19,10 @@ const CocktailsOrderStyled = styled(GlobalContainer)`
   .cocktails--order--list {
     table {
       width: 100%;
+      td {
+        border-right: 1px solid #dee2e6;
+        border-left: 1px solid #dee2e6;
+      }
     }
   }
 }
