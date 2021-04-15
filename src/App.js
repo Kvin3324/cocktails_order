@@ -4,7 +4,7 @@ import variables from "./variables";
 import LogginSpace from "./components/LogginSpace/LogginSpace";
 import SignUpSpace from "./components/SignUpSpace/SignUpSpace";
 import CocktailsList from "./components/CocktailsList/CocktailsList";
-import CocktailsOrder from "./CocktailsOrder/CocktailsOrder";
+import CocktailsOrder from "./components/CocktailsOrder/CocktailsOrder";
 
 function App() {
   const GlobalStyle = createGlobalStyle`
@@ -23,7 +23,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={LogginSpace}></Route>
           <Route exact path="/inscription" component={SignUpSpace}></Route>
-          <Route exact path="/cocktailsList" component={CocktailsList}></Route>
+          <Route exact path="/cocktailsList/:token" component={CocktailsList}></Route>
           <Route exact path="/cocktailsOrder" component={CocktailsOrder}></Route>
         </Switch>
       </ThemeProvider>
